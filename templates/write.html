@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% from 'bootstrap/form.html' import render_form %}
+<html lang="en">
+<head>
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="static/styles/styles.css"/>
+    <meta charset="UTF-8">{% block title %}
+    <title>Dangerous Writing App</title>{% endblock %}
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+</head>
+<body>
+<div class="img logo">
+    <a href="{{ url_for('home_page') }}"><img src="static/squiblerlogo.jpg" class="squiblerlogo"></a>
+</div>
+
+<div class="container">
+ <form method="POST" action="/" id="textBoxForm">
+        {{ render_form(form) }}
+    </form>
+    <p id="status">User is not writing</p>
+</div>
+ <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    const textBox = document.querySelector('.write_box');
+    const status = document.getElementById('status');
+
+    // Handle user typing status
+    textBox.addEventListener('input', function() {
+        if (textBox.value.length > 0) {
+            status.textContent = 'User is writing';
+        } else {
+            status.textContent = 'User is not writing';
+        }
+
+        // Send the text to the server
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/update_text', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token() }}');
+        xhr.send('text=' + encodeURIComponent(textBox.value));
+    });
+
+    // Periodic check
+    setInterval(function() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/check_typing_status', true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.reset) {
+                    // Optionally preserve text for a certain period or handle specific conditions
+                    textBox.value = ''; // Clear the text box
+                    status.textContent = 'User is not writing';
+                }
+            }
+        };
+        xhr.send();
+    }, 5000); // Check every 5 seconds
+});
+    </script>
+</body>
+ {{ bootstrap.load_js() }}
+</html>

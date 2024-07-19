@@ -19,14 +19,15 @@
 <div class="container">
 <div class="logo">
 
-<h1>The Most <span class="dangeroustext">Dangerous</span> Writing App</h1>
+<h1>The Most <span class="dangeroustext">Dangerous</span> Random Prompt Generator</h1>
 </div>
-<h2>Don’t stop writing, or all progress will be lost.
-</h2>
    </div>
+<div class="container">
+    <a href="{{ url_for('prompt') }}" class="button">{{ prompt_text }}</a>
+</div>
 <div class="buttons">
-<a href="{{ url_for('prompt') }}" class="gen_prompt">Generate a Prompt</a>
-<a href="{{ url_for('write') }}" class="no_prompt">Start Writing w/o Prompt</a>
+<a href="{{ url_for('prompt') }}" class=" gen_prompt">Generate a New Prompt</a>
+<a href="{{ url_for('write', prompt_in=prompt_text) }}" class="no_prompt">Start Writing</a>
 
 </div>
 </body>
